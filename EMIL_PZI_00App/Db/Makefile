@@ -10,7 +10,7 @@ DB += dbExample2.db
 DB += EMIL_PZI_00Version.db
 DB += dbSubExample.db
 DB += user.substitutions
-
+DB += singleAxis.db
 # If <anyname>.db template is not named <anyname>*.template add
 # <anyname>_TEMPLATE = <templatename>
 

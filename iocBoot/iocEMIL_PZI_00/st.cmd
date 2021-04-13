@@ -5,6 +5,8 @@
 
 < envPaths
 
+epicsEnvSet("SYS", "EMILEL")
+
 cd "${TOP}"
 
 ## Register all support components
@@ -12,9 +14,10 @@ dbLoadDatabase "dbd/EMIL_PZI_00.dbd"
 EMIL_PZI_00_registerRecordDeviceDriver pdbbase
 
 ## Load record instances
-dbLoadTemplate "db/user.substitutions"
-dbLoadRecords "db/EMIL_PZI_00Version.db", "user=emil"
-dbLoadRecords "db/dbSubExample.db", "user=emil"
+#dbLoadTemplate "db/user.substitutions"
+#dbLoadRecords "db/EMIL_PZI_00Version.db", "user=emil"
+#dbLoadRecords "db/dbSubExample.db", "user=emil"
+dbLoadRecords "db/singleAxis.db", "P=$(SYS), A=axis1, S=sensor1"
 
 #- Set this to see messages from mySub
 #var mySubDebug 1

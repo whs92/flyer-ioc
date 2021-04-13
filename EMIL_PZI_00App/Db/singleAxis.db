@@ -1,0 +1,49 @@
+## This file defines a setpoint and a readback that is a function of that setpoint.
+## Simulating a single axis process. There is also a done signal
+
+## $(P) is the prefix of our template
+## $(A) is the axis name
+## $(S) is the sensor name
+
+#######  The following 3 records represent a positioner axis #########
+
+record(ao, "$(P):$(A):setPos"){
+	field(DESC, "set position")
+	field(DRVH, "3.14")
+	field(DRVL, "0")
+	field(FLNK, "$(P):$(A):done")		# process the done calc when this changes
+}
+
+#A filter so it slowly moves to where it's going
+record(calc, "$(P):$(A):getPos"){
+	field(DESC, "position rb")
+	field(INPA, "$(P):$(A):setPos")
+	field(INPB, "$(P):$(A):getPos.VAL")	# Takes itslef as input to implement filter
+	field(INPC, "0.9")				# Change this to adjust the rate of change
+	field(CALC, "B+C*(A-B)")		
+	field(SCAN, ".1 second")		# How often the filter updates
+	field(PREC, "3")				# The precision of the output
+	field(FLNK, "$(P):$(A):done")
+}
+
+# Once it's there set a flag to 1
+record(calc, "$(P):$(A):done"){
+	field(DESC, "done signal calc")
+	field(INPA, "$(P):$(A):setPos")
+	field(INPB, "$(P):$(A):getPos")
+	field(CALC, "(ABS(A-B)<0.0001)?1:0")
+	
+}
+
+
+#######  The following record represent a system depenedent on the axis above #########
+
+record(calc, "$(P):$(S):getCount"){
+	field(INPA,  "$(P):$(A):getPos NPP")			# NPP means do not process $(P):$(A):getPos when we read it
+	field(CALC, "FLOOR(2**16*COS(A+PI/2)^2)")		# The function is cos^2 of the readback of the positioner axis above
+	field(MDEL, "-1")								# Forces any monitoring clients to update even if the value is the same
+	field(SCAN, ".1 second")
+}
+
+
+
