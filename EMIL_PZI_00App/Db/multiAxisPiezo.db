@@ -1,0 +1,114 @@
+## This file defines a system with three floating point inputs and 3 integer outputs which are a funtion of those inputs
+## There is no done signal
+
+## $(P) is the prefix of our template
+
+
+#######  The following records represent piezo axis inputs in volts #########
+
+record(ao, "$(P):setPitch"){
+	field(DESC, "setPitch")
+	field(EGU, "V")
+	field(DRVH, "10")
+	field(DRVL, "0")
+	field(FLNK, "$(P):filtPitch")
+}
+
+record(ao, "$(P):setRoll"){
+	field(DESC, "setRoll")
+	field(EGU, "V")
+	field(DRVH, "10")
+	field(DRVL, "0")
+	field(FLNK, "$(P):filtRoll")
+}
+
+record(ao, "$(P):setHeight"){
+	field(DESC, "setPitch")
+	field(EGU, "V")
+	field(DRVH, "10")
+	field(DRVL, "0")
+	field(FLNK, "$(P):filtHeight")
+}
+
+######## Filters so that the axis slowly move to where they are going. #####
+
+record(calc, "$(P):filtPitch"){
+	field(DESC, "pitch voltage filter")
+	field(INPA, "$(P):setPitch")
+	field(INPB, "$(P):filtPitch.VAL")		# Takes itslef as input to implement filter
+	field(INPC, "0.9")						# Change this to adjust the rate of change
+	field(CALC, "B+C*(A-B)")		
+	field(SCAN, ".1 second")				# How often the filter updates
+	field(PREC, "3")						# The precision of the output
+	field(EGU, "V")
+}
+
+record(calc, "$(P):filtRoll"){
+	field(DESC, "Roll voltage filter")
+	field(INPA, "$(P):setRoll")
+	field(INPB, "$(P):filtRoll.VAL")		# Takes itslef as input to implement filter
+	field(INPC, "0.9")						# Change this to adjust the rate of change
+	field(CALC, "B+C*(A-B)")		
+	field(SCAN, ".1 second")				# How often the filter updates
+	field(PREC, "3")						# The precision of the output
+	field(EGU, "V")
+}
+
+record(calc, "$(P):filtHeight"){
+	field(DESC, "height voltage filter")
+	field(INPA, "$(P):setHeight")
+	field(INPB, "$(P):filtHeight.VAL")	# Takes itslef as input to implement filter
+	field(INPC, "0.9")						# Change this to adjust the rate of change
+	field(CALC, "B+C*(A-B)")		
+	field(SCAN, ".1 second")				# How often the filter updates
+	field(PREC, "3")						# The precision of the output
+	field(EGU, "V")
+}
+
+###### The following functions define the transfer function for each axis
+
+
+
+record(calc, "$(P):getPitch"){
+	field(DESC, "calc pitch encoder")
+	field(INPA, "$(P):filtPitch CP")	# CP sets up a monitor on the record it's looking at so this record will process whenever that one does
+	field(INPB, "$(P):filtRoll CP")
+	field(INPC, "$(P):filtHeight CP")
+	field(INPD, "3.0")
+	field(INPE, "1.0")
+	field(INPF, "1.0")
+	field(PREC, "0")
+	field(EGU, "Counts")
+	field(CALC, "FLOOR(2**16*(A*D + B*E +C*F))")		#The Pitch is a linear combination of the pitch, roll and height, passed through a 16bit encoder
+}
+
+record(calc, "$(P):getRoll"){
+	field(DESC, "calc roll encoder")
+	field(INPA, "$(P):filtPitch CP")	# CP sets up a monitor on the record it's looking at so this record will process whenever that one does
+	field(INPB, "$(P):filtRoll CP")
+	field(INPC, "$(P):filtHeight CP")
+	field(INPD, "1.0")
+	field(INPE, "3.0")
+	field(INPF, "1.0")
+	field(PREC, "0")
+	field(EGU, "Counts")
+	field(CALC, "FLOOR(2**16*(A*D + B*E +C*F))")		#The Pitch is a linear combination of the pitch, roll and height, passed through a 16bit encoder
+}
+
+record(calc, "$(P):getHeight"){
+	field(DESC, "calc height encoder")
+	field(INPA, "$(P):filtPitch CP")	# CP sets up a monitor on the record it's looking at so this record will process whenever that one does
+	field(INPB, "$(P):filtRoll CP")
+	field(INPC, "$(P):filtHeight CP")
+	field(INPD, "1.0")
+	field(INPE, "1.0")
+	field(INPF, "3.0")
+	field(PREC, "0")
+	field(EGU, "Counts")
+	field(CALC, "FLOOR(2**16*(A*D + B*E +C*F))")		#The Pitch is a linear combination of the pitch, roll and height, passed through a 16bit encoder
+}
+
+
+
+
+

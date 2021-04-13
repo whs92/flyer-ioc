@@ -18,7 +18,7 @@ EMIL_PZI_00_registerRecordDeviceDriver pdbbase
 #dbLoadRecords "db/EMIL_PZI_00Version.db", "user=emil"
 #dbLoadRecords "db/dbSubExample.db", "user=emil"
 dbLoadRecords "db/singleAxis.db", "P=$(SYS), A=axis1, S=sensor1"
-
+dbLoadRecords "db/multiAxisPiezo.db", "P=$(SYS)"
 #- Set this to see messages from mySub
 #var mySubDebug 1
 

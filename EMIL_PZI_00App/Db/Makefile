@@ -11,6 +11,7 @@ DB += EMIL_PZI_00Version.db
 DB += dbSubExample.db
 DB += user.substitutions
 DB += singleAxis.db
+DB += multiAxisPiezo.db
 # If <anyname>.db template is not named <anyname>*.template add
 # <anyname>_TEMPLATE = <templatename>
 
