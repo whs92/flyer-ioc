@@ -1,6 +1,0 @@
-record(lsi, "$(user):EMIL_PZI_00:version") {
-    field(DTYP, "EMIL_PZI_00 version")
-    field(DESC, "Version string")
-    field(SIZV, "$(SIZV=200)")
-    field(PINI, "YES")
-}
