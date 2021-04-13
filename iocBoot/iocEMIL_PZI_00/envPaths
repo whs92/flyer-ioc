@@ -1,0 +1,3 @@
+epicsEnvSet("IOC","iocEMIL_PZI_00")
+epicsEnvSet("TOP","/home/emil/Apps/epics/R7.0.4.1/work/ioc/TEST/EMIL_PZI_00")
+epicsEnvSet("EPICS_BASE","/usr/local/epics/base")

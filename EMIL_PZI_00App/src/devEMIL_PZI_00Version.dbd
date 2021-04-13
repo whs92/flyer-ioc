@@ -1,0 +1,1 @@
+device(lsi,INST_IO,devEMIL_PZI_00Version,"EMIL_PZI_00 version")
