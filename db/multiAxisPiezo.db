@@ -1,127 +1,127 @@
 ## This file defines a system with three floating point inputs and 3 integer outputs which are a funtion of those inputs
 ## There is no done signal
 
-## $(P) is the prefix of our template
-
+## $(P1) is the prefix of our template for the voltage source
+## $(P2) is the prefix of our template for the everything else
 
 #######  The following records represent piezo axis inputs in millivolts #########
 
-record(ao, "$(P):setPitch"){
+record(ao, "$(P1):Piezo2U1"){
 	field(DESC, "setPitch")
 	field(EGU, "mV")
 	field(DRVH, "10000")
 	field(DRVL, "0")
-	field(FLNK, "$(P):filtPitch")
+	field(FLNK, "$(P1):filtPitch")
 }
 
-record(ao, "$(P):setRoll"){
+record(ao, "$(P1):Piezo3U1"){
 	field(DESC, "setRoll")
 	field(EGU, "mV")
 	field(DRVH, "10000")
 	field(DRVL, "0")
-	field(FLNK, "$(P):filtRoll")
+	field(FLNK, "$(P1):filtRoll")
 }
 
-record(ao, "$(P):setHeight"){
+record(ao, "$(P1):Piezo1U1"){
 	field(DESC, "setPitch")
 	field(EGU, "mV")
 	field(DRVH, "10000")
 	field(DRVL, "0")
-	field(FLNK, "$(P):filtHeight")
+	field(FLNK, "$(P1):filtHeight")
 }
 
 ######## Filters so that the axes slowly move to where they are going. #####
 
-record(calc, "$(P):filtPitch"){
+record(calc, "$(P1):filtPitch"){
 	field(DESC, "pitch voltage filter")
-	field(INPA, "$(P):setPitch")
-	field(INPB, "$(P):filtPitch.VAL")		# Takes itslef as input to implement filter
+	field(INPA, "$(P1):Piezo2U1")
+	field(INPB, "$(P1):filtPitch.VAL")		# Takes itslef as input to implement filter
 	field(INPC, "0.9")						# Change this to adjust the rate of change
 	field(CALC, "B+C*(A-B)")		
 	field(SCAN, ".1 second")				# How often the filter updates
 	field(PREC, "3")						# The precision of the output
-	field(EGU, "V")
-	field(FLNK, "$(P):getPitchEnc")
+	field(EGU, "mV")
+	field(FLNK, "$(P2):cr2PitchEncoder")
 }
 
-record(calc, "$(P):filtRoll"){
+record(calc, "$(P1):filtRoll"){
 	field(DESC, "Roll voltage filter")
-	field(INPA, "$(P):setRoll")
-	field(INPB, "$(P):filtRoll.VAL")		# Takes itslef as input to implement filter
+	field(INPA, "$(P1):Piezo3U1")
+	field(INPB, "$(P1):filtRoll.VAL")		# Takes itslef as input to implement filter
 	field(INPC, "0.9")						# Change this to adjust the rate of change
 	field(CALC, "B+C*(A-B)")		
 	field(SCAN, ".1 second")				# How often the filter updates
 	field(PREC, "3")						# The precision of the output
-	field(EGU, "V")
-	field(FLNK, "$(P):getRollEnc")
+	field(EGU, "mV")
+	field(FLNK, "$(P2):cr2RollEncoder")
 }
 
-record(calc, "$(P):filtHeight"){
+record(calc, "$(P1):filtHeight"){
 	field(DESC, "height voltage filter")
-	field(INPA, "$(P):setHeight")
-	field(INPB, "$(P):filtHeight.VAL")	# Takes itslef as input to implement filter
+	field(INPA, "$(P1):Piezo1U1")
+	field(INPB, "$(P1):filtHeight.VAL")	# Takes itslef as input to implement filter
 	field(INPC, "0.9")						# Change this to adjust the rate of change
 	field(CALC, "B+C*(A-B)")		
 	field(SCAN, ".1 second")				# How often the filter updates
 	field(PREC, "3")						# The precision of the output
-	field(EGU, "V")
-	field(FLNK, "$(P):getHeightEnc")
+	field(EGU, "mV")
+	field(FLNK, "$(P2):cr2TraHeightEncoder")
 }
 
 ###### The following records encode the values from the piezo drive voltages
 
 
 
-record(calc, "$(P):getPitchEnc"){
+record(calc, "$(P2):cr2PitchEncoder"){
 	field(DESC, "calc pitch encoder")
-	field(INPA, "$(P):filtPitch")
+	field(INPA, "$(P1):filtPitch")
 	field(PREC, "0")
 	field(EGU, "Counts")
     field(CALC, "(FLOOR(3800000*A/10000))") # Assume encoder has a range of 3.8e6
-	field(FLNK, "$(P):getPitch")
+
 }
 
-record(calc, "$(P):getRollEnc"){
+record(calc, "$(P2):cr2RollEncoder"){
 	field(DESC, "calc roll encoder")
-	field(INPA, "$(P):filtRoll")
+	field(INPA, "$(P1):filtRoll")
 	field(PREC, "0")
 	field(EGU, "Counts")
     field(CALC, "(FLOOR(3800000*A/10000))") # Assume encoder has a range of 3.8e6
-	field(FLNK, "$(P):getRoll")
+	
 }
 
-record(calc, "$(P):getHeightEnc"){
+record(calc, "$(P2):cr2TraHeightEncoder"){
 	field(DESC, "calc height encoder")
-	field(INPA, "$(P):filtHeight")
+	field(INPA, "$(P1):filtHeight")
 	field(PREC, "0")
 	field(EGU, "Counts")
     field(CALC, "(FLOOR(3800000*A/10000))") # Assume encoder has a range of 3.8e6
-	field(FLNK, "$(P):getHeight")
+	
 }
 
 ####### The following records calculate the pitch, roll and height based on the encoder values
 
-record(calc, "$(P):getPitch"){
+record(calc, "$(P2):getPitch"){
 	field(DESC, "calc pitch angle")
-	field(INPA, "$(P):getPitchEnc")
-	field(INPB, "$(P):getHeightEnc")
+	field(INPA, "$(P2):cr2PitchEncoder CP")
+	field(INPB, "$(P2):cr2TraHeightEncoder CP")
 	field(PREC, "0")
 	field(EGU, "uRad")
-    field(CALC, "10E6*ATAN((((A-(3260320-3800000))-(B- (3220620 - 3800000)))*5)/64.75E6)") 
+    field(CALC, "1000000*ATAN((((A-(3260320-3800000))-(B- (3220620 - 3800000)))*5)/64750000)") 
 }
 
-record(calc, "$(P):getRoll"){
+record(calc, "$(P2):getRoll"){
 	field(DESC, "calc pitch angle")
-	field(INPA, "$(P):getRollEnc")
-	field(INPB, "$(P):getHeightEnc")
+	field(INPA, "$(P2):cr2RollEncoder CP")
+	field(INPB, "$(P2):cr2TraHeightEncoder CP")
 	field(PREC, "0")
 	field(EGU, "uRad")
-    field(CALC, "10E6*ATAN((((A-(3263554 - 3800000))-(B- (3220620 - 3800000)))*5)/127.75E6)") 
+    field(CALC, "1000000*ATAN((((A-(3263554 - 3800000))-(B- (3220620 - 3800000)))*5)/127750000)") 
 }
 
-record(calc, "$(P):getHeight"){
+record(calc, "$(P2):getHeight"){
 	field(DESC, "calc pitch angle")
-	field(INPA, "$(P):getHeightEnc")
+	field(INPA, "$(P2):cr2TraHeightEncoder  CP")
 	field(PREC, "0")
 	field(EGU, "um")
     #field(CALC, "(A-(3220620−3800000))*5") 

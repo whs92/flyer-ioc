@@ -21,7 +21,7 @@ dbLoadRecords "db/singleAxis.db", "P=$(SYS), A=axis1, S=sensor1"
 dbLoadRecords "db/singleAxis.db", "P=$(SYS), A=axis2, S=sensor2"
 dbLoadRecords "db/singleAxis.db", "P=$(SYS), A=axis3, S=sensor3"
 
-dbLoadRecords "db/multiAxisPiezo.db", "P=$(SYS)"
+dbLoadRecords "db/multiAxisPiezo.db", "P1=$(SYS),P2=$(SYS):dcm"
 #- Set this to see messages from mySub
 #var mySubDebug 1
 
