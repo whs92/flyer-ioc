@@ -40,7 +40,7 @@ record(calc, "$(P):filtPitch"){
 	field(CALC, "B+C*(A-B)")		
 	field(SCAN, ".1 second")				# How often the filter updates
 	field(PREC, "3")						# The precision of the output
-	field(EGU, "V")
+	field(EGU, "mV")
 	field(FLNK, "$(P):getPitchEnc")
 }
 
@@ -52,7 +52,7 @@ record(calc, "$(P):filtRoll"){
 	field(CALC, "B+C*(A-B)")		
 	field(SCAN, ".1 second")				# How often the filter updates
 	field(PREC, "3")						# The precision of the output
-	field(EGU, "V")
+	field(EGU, "mV")
 	field(FLNK, "$(P):getRollEnc")
 }
 
@@ -64,7 +64,7 @@ record(calc, "$(P):filtHeight"){
 	field(CALC, "B+C*(A-B)")		
 	field(SCAN, ".1 second")				# How often the filter updates
 	field(PREC, "3")						# The precision of the output
-	field(EGU, "V")
+	field(EGU, "mV")
 	field(FLNK, "$(P):getHeightEnc")
 }
 
@@ -77,7 +77,7 @@ record(calc, "$(P):getPitchEnc"){
 	field(INPA, "$(P):filtPitch")
 	field(PREC, "0")
 	field(EGU, "Counts")
-    field(CALC, "(FLOOR(3800000*A/10000)") # Assume encoder has a range of 3.8e6
+    field(CALC, "(FLOOR(3800000*A/10000))") # Assume encoder has a range of 3.8e6
 	field(FLNK, "$(P):getPitch")
 }
 
@@ -86,7 +86,8 @@ record(calc, "$(P):getRollEnc"){
 	field(INPA, "$(P):filtRoll")
 	field(PREC, "0")
 	field(EGU, "Counts")
-    field(CALC, "(FLOOR(3800000*A/10000)") # Assume encoder has a range of 3.8e6
+    field(CALC, "(FLOOR(3800000*A/10000))") # Assume encoder has a range of 3.8e6
+	field(FLNK, "$(P):getRoll")
 }
 
 record(calc, "$(P):getHeightEnc"){
@@ -94,7 +95,8 @@ record(calc, "$(P):getHeightEnc"){
 	field(INPA, "$(P):filtHeight")
 	field(PREC, "0")
 	field(EGU, "Counts")
-    field(CALC, "(FLOOR(3800000*A/10000)") # Assume encoder has a range of 3.8e6
+    field(CALC, "(FLOOR(3800000*A/10000))") # Assume encoder has a range of 3.8e6
+	field(FLNK, "$(P):getHeight")
 }
 
 ####### The following records calculate the pitch, roll and height based on the encoder values
@@ -105,7 +107,7 @@ record(calc, "$(P):getPitch"){
 	field(INPB, "$(P):getHeightEnc")
 	field(PREC, "0")
 	field(EGU, "uRad")
-    field(CALC, "10E6*ATAN((((A-(3260320−3800000))-(B-(3220620−3800000)))*5)/64.75E6)") 
+    field(CALC, "10E6*ATAN((((A-(3260320-3800000))-(B- (3220620 - 3800000)))*5)/64.75E6)") 
 }
 
 record(calc, "$(P):getRoll"){
@@ -114,7 +116,7 @@ record(calc, "$(P):getRoll"){
 	field(INPB, "$(P):getHeightEnc")
 	field(PREC, "0")
 	field(EGU, "uRad")
-    field(CALC, "10E6*ATAN((((A-(3263554−3800000))-(B-(3220620−3800000)))*5)/127.75E6)") 
+    field(CALC, "10E6*ATAN((((A-(3263554 - 3800000))-(B- (3220620 - 3800000)))*5)/127.75E6)") 
 }
 
 record(calc, "$(P):getHeight"){
@@ -122,5 +124,6 @@ record(calc, "$(P):getHeight"){
 	field(INPA, "$(P):getHeightEnc")
 	field(PREC, "0")
 	field(EGU, "um")
-    field(CALC, "(B-(3220620−3800000))*5") 
+    #field(CALC, "(A-(3220620−3800000))*5") 
+	field(CALC, "(A-(3220620 -3800000))*5")
 }
