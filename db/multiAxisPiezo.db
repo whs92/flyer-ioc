@@ -79,7 +79,7 @@ record(calc, "$(P):getPitch"){
 	field(INPF, "1.0")
 	field(PREC, "0")
 	field(EGU, "Counts")
-	field(CALC, "FLOOR(2**16*(A*D + B*E +C*F))")		#The Pitch is a linear combination of the pitch, roll and height, passed through a 16bit encoder
+	field(CALC, "FLOOR(((2**16)/10)*(A*D + B*E +C*F))")		#The Pitch is a linear combination of the pitch, roll and height, passed through a 16bit encoder
 }
 
 record(calc, "$(P):getRoll"){
@@ -92,7 +92,7 @@ record(calc, "$(P):getRoll"){
 	field(INPF, "1.0")
 	field(PREC, "0")
 	field(EGU, "Counts")
-	field(CALC, "FLOOR(2**16*(A*D + B*E +C*F))")		#The Pitch is a linear combination of the pitch, roll and height, passed through a 16bit encoder
+	field(CALC, "FLOOR(((2**16)/10)*(A*D + B*E +C*F))")		#The Pitch is a linear combination of the pitch, roll and height, passed through a 16bit encoder
 }
 
 record(calc, "$(P):getHeight"){
@@ -105,7 +105,7 @@ record(calc, "$(P):getHeight"){
 	field(INPF, "3.0")
 	field(PREC, "0")
 	field(EGU, "Counts")
-	field(CALC, "FLOOR(2**16*(A*D + B*E +C*F))")		#The Pitch is a linear combination of the pitch, roll and height, passed through a 16bit encoder
+	field(CALC, "FLOOR(((2**16)/10)*(A*D + B*E +C*F))")		#The Pitch is a linear combination of the pitch, roll and height, passed through a 16bit encoder
 }
 
 

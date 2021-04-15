@@ -5,7 +5,7 @@
 
 < envPaths
 
-epicsEnvSet("SYS", "EMILEL")
+epicsEnvSet("SYS", "EMILEL:TestIOC00")
 
 cd "${TOP}"
 
@@ -18,6 +18,9 @@ EMIL_PZI_00_registerRecordDeviceDriver pdbbase
 #dbLoadRecords "db/EMIL_PZI_00Version.db", "user=emil"
 #dbLoadRecords "db/dbSubExample.db", "user=emil"
 dbLoadRecords "db/singleAxis.db", "P=$(SYS), A=axis1, S=sensor1"
+dbLoadRecords "db/singleAxis.db", "P=$(SYS), A=axis2, S=sensor2"
+dbLoadRecords "db/singleAxis.db", "P=$(SYS), A=axis3, S=sensor3"
+
 dbLoadRecords "db/multiAxisPiezo.db", "P=$(SYS)"
 #- Set this to see messages from mySub
 #var mySubDebug 1
