@@ -1,0 +1,123 @@
+## This file defines a setpoint and a readback that is a function of that setpoint.
+## Simulating a single axis process. There is also a done signal
+
+## $(P) is the prefix of our template
+## $(A) is the axis name
+## $(S) is the sensor name
+
+#######  The following 3 records represent a positioner axis #########
+
+record(ao, "$(P):$(A):setStartPos"){
+	field(DESC, "set start position")
+	field(VAL, "1")
+	field(DRVH, "3.14")
+	field(DRVL, "0")
+	field(FLNK, "$(P):$(A):done")		# process the done calc when this changes
+}
+
+record(ao, "$(P):$(A):setEndPos"){
+	field(DESC, "set end position")
+	field(VAL, "2")
+	field(DRVH, "3.14")
+	field(DRVL, "0")
+	field(FLNK, "$(P):$(A):done")		# process the done calc when this changes
+}
+
+
+record(ao, "$(P):$(A):setVel"){
+	field(DESC, "set velocity units/s")
+	field(VAL, "0.1")
+	field(DRVH, "10")
+	field(DRVL, "0")
+	field(FLNK, "$(P):$(A):done")		# process the done calc when this changes
+}
+
+
+#A filter so it slowly moves to where it's going
+record(calc, "$(P):$(A):getDirection"){
+	field(DESC, "move direction")
+	field(INPA, "$(P):$(A):setStartPos CP")
+	field(INPB, "$(P):$(A):setEndPos CP")
+	field(CALC, "A>B?-1:1")		
+}
+
+#A filter so it slowly moves to where it's going
+record(calc, "$(P):$(A):getPos"){
+	field(DESC, "position rb")
+	field(VAL, "2.0")
+	field(INPA, "$(P):$(A):getDirection")
+	field(INPB, "$(P):$(A):setVel")
+	field(INPC, "$(P):$(A):getPos.VAL")	# Takes itslef as input to implement filter
+	field(CALC, "C+A*B/10")		
+	field(SCAN, ".1 second")		# How often the filter updates
+	field(PREC, "3")				# The precision of the output
+	field(DISV, "1")
+	field(FLNK, "$(P):$(A):done")
+}
+
+#A filter so it slowly moves to where it's going
+record(ao, "$(P):$(A):init"){
+	field(DESC, "prepare move")
+	field(DOL, "$(P):$(A):setStartPos")
+	field(OUT, "$(P):$(A):getPos.VAL")
+	field(OMSL, "closed_loop")
+	field(DRVH, "3.14")
+	field(DRVL, "0")
+	field(DTYP, "Soft Channel")
+}
+
+#A filter so it slowly moves to where it's going
+record(bo, "$(P):$(A):start"){
+	field(DESC, "start move")
+	field(VAL, "0")
+	field(DTYP, "Soft Channel")
+	field(OUT, "$(P):$(A):getPos.DISA")
+	field(FLNK, "$(P):$(A):done")
+}
+
+#A filter so it slowly moves to where it's going
+record(bo, "$(P):$(A):stop"){
+	field(DESC, "stop move")
+	field(VAL, "1")
+	field(DTYP, "Soft Channel")
+	field(OUT, "$(P):$(A):getPos.DISA")
+	field(FLNK, "$(P):$(A):done")
+}
+
+# Once it's there set a flag to 1
+record(calcout, "$(P):$(A):done"){
+	field(DESC, "done signal calc")
+	field(INPA, "$(P):$(A):setEndPos CP")
+	field(INPB, "$(P):$(A):getPos CP")
+	field(INPC, "$(P):$(A):setVel")
+	field(CALC, "(ABS(A-B)<C/5) ?1:0")
+	field(VAL, "1")
+	field(OOPT, "When Non-zero")
+	field(OUT, "$(P):$(A):getPos.DISA" )		# write a 1 to the DISA field to disable it
+}
+
+
+#######  The following record represent a system depenedent on the axis above #########
+
+record(calc, "$(P):$(S):getCount"){
+	field(INPA,  "$(P):$(A):getPos NPP")			# NPP means do not process $(P):$(A):getPos when we read it
+	field(CALC, "FLOOR(2**16*COS(A+PI/2)^2)")		# The function is cos^2 of the readback of the positioner axis above
+	field(MDEL, "-1")								# Forces any monitoring clients to update even if the value is the same
+	field(SCAN, ".1 second")
+}
+
+
+##### Testing bo bi, mbbo and mbbi with mv in ophyd
+
+
+record(bo, "$(P):$(S):setBin"){
+	field(ZNAM, "OFF")
+	field(ONAM, "ON")
+	field(FLNK, "$(P):$(S):getBin")
+}
+
+record(bi, "$(P):$(S):getBin"){
+        field(INP, "$(P):$(S):setBin.VAL")
+	field(ZNAM, "OFF")
+        field(ONAM, "ON")
+}
